@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "id": "tsg_modulardiscs",
+  "version": "${version}",
+
+  "name": "TSG's Modular Discs",
+  "description": "This mod allows you to add music discs to /.discs/, and have them as in game records!",
+  "authors": [
+    "AyeTSG"
+  ],
+  "contact": {
+    "homepage": "https://ayetsg.github.io"
+  },
+
+  "license": "GPL-3.0",
+  "icon": "assets/tsg_modulardiscs/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "io.github.ayetsg.modulardiscs.ModularDiscsMod"
+    ]
+  },
+
+  "depends": {
+    "fabricloader": ">=0.14.9",
+    "fabric-api": "*",
+    "minecraft": "~1.19",
+    "java": ">=17"
+  },
+  "suggests": {
+    "another-mod": "*"
+  }
+}
