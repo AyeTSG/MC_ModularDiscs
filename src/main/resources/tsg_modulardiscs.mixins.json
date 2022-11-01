@@ -1,0 +1,16 @@
+{
+    "required": true,
+    "minVersion": "0.8",
+    "package": "io.github.ayetsg.modulardiscs.mixin",
+    "compatibilityLevel": "JAVA_8",
+    "mixins": [],
+    "client": [
+        "AddDiscPackData"
+    ],
+    "server": [
+        "AddDiscPackData"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
+}
