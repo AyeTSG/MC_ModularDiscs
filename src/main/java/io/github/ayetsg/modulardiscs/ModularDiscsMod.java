@@ -5,6 +5,8 @@ package io.github.ayetsg.modulardiscs;
 import net.devtech.arrp.api.RRPCallback;
 import net.devtech.arrp.api.RuntimeResourcePack;
 import net.devtech.arrp.json.lang.JLang;
+import net.devtech.arrp.json.models.JModel;
+import net.devtech.arrp.json.models.JTextures;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.loader.api.FabricLoader;
@@ -42,7 +44,6 @@ public class ModularDiscsMod implements ModInitializer {
 	// setup the runtime resources
 	public static final RuntimeResourcePack RESOURCE_PACK = RuntimeResourcePack.create("tsg_modulardiscs:runtime");
 	public static final JLang FINAL_LANG = new JLang();
-
 	@Override
 	public void onInitialize() {
 		// get the .minecraft folder
@@ -82,6 +83,9 @@ public class ModularDiscsMod implements ModInitializer {
 						FINAL_LANG.entry("item.tsg_modulardiscs." + discId, "Music Disc");
 						FINAL_LANG.entry("item.tsg_modulardiscs." + discId + ".desc", discName);
 
+						// create the resources - models
+						RESOURCE_PACK.addModel(new JModel().parent("minecraft:item/generated").textures(new JTextures().layer0("minecraft:item/music_disc_stal")), new Identifier("tsg_modulardiscs", "item/" + discId));
+
 						// create the item
 						final Item GENERATED_DISC = new GeneratedMusicDiscItem(0, SoundEvents.MUSIC_DISC_STAL, new FabricItemSettings().group(ItemGroup.MISC).rarity(Rarity.RARE).maxCount(1), 0);
 						Registry.register(Registry.ITEM, new Identifier("tsg_modulardiscs", discId), GENERATED_DISC);
@@ -95,6 +99,6 @@ public class ModularDiscsMod implements ModInitializer {
 
 		// register the resource pack
 		RESOURCE_PACK.addLang(new Identifier("tsg_modulardiscs:en_us"), FINAL_LANG);
-		RRPCallback.BEFORE_VANILLA.register(a -> a.add(RESOURCE_PACK));
+		RRPCallback.AFTER_VANILLA.register(a -> a.add(RESOURCE_PACK));
 	}
 }
