@@ -13,6 +13,7 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.Items;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
 
 import java.io.File;
@@ -82,7 +83,7 @@ public class ModularDiscsMod implements ModInitializer {
 						FINAL_LANG.entry("item.tsg_modulardiscs." + discId + ".desc", discName);
 
 						// create the item
-						final Item GENERATED_DISC = new GeneratedMusicDiscItem(0, SoundEvents.MUSIC_DISC_STAL, new FabricItemSettings().group(ItemGroup.MISC), 0);
+						final Item GENERATED_DISC = new GeneratedMusicDiscItem(0, SoundEvents.MUSIC_DISC_STAL, new FabricItemSettings().group(ItemGroup.MISC).rarity(Rarity.RARE).maxCount(1), 0);
 						Registry.register(Registry.ITEM, new Identifier("tsg_modulardiscs", discId), GENERATED_DISC);
 					} catch (IOException e) {
 						LOGGER.error("Couldn't open ZIP!");
