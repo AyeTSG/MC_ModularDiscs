@@ -23,13 +23,13 @@ public class ModularDiscsMod implements ModInitializer {
 		Path MinecraftDir = FabricLoader.getInstance().getGameDir();
 
 		// create a variable for the .discs/ folder
-		Path DiscsDir = Paths.get(MinecraftDir.toString(), ".discs");
+		Path DiscsDir = Paths.get(MinecraftDir.toString(), "discs");
 
 		// create the .discs/ folder, if it doesn't already exist
 		try {
 			Files.createDirectory(DiscsDir);
 		} catch (IOException e) {
-			LOGGER.error("Couldn't make .discs/ directory!");
+			LOGGER.error("Couldn't make /discs/ directory!");
 			LOGGER.error(e.toString());
 		}
 	}
