@@ -3,15 +3,34 @@
 package io.github.ayetsg.modulardiscs;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.Items;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.zip.ZipFile;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
+
+import io.github.ayetsg.modulardiscs.item.GeneratedMusicDiscItem;
 
 public class ModularDiscsMod implements ModInitializer {
 	// setup the logger
@@ -22,15 +41,44 @@ public class ModularDiscsMod implements ModInitializer {
 		// get the .minecraft folder
 		Path MinecraftDir = FabricLoader.getInstance().getGameDir();
 
-		// create a variable for the .discs/ folder
-		Path DiscsDir = Paths.get(MinecraftDir.toString(), "discs");
+		// create a variable for the discpacks folder
+		Path DiscsDir = Paths.get(MinecraftDir.toString(), "discpacks");
 
-		// create the .discs/ folder, if it doesn't already exist
+		// create the discpacks folder, if it doesn't already exist
 		try {
 			Files.createDirectory(DiscsDir);
 		} catch (IOException e) {
-			LOGGER.error("Couldn't make /discs/ directory!");
+			LOGGER.error("Couldn't make /discpacks/ directory!");
 			LOGGER.error(e.toString());
+		}
+
+		// loop over all files in the discpacks folder
+		File[] DiscDirListing = DiscsDir.toFile().listFiles();
+		if (DiscDirListing != null) {
+			for (File DiscPackFile : DiscDirListing) {
+				if (DiscPackFile.isFile()) {
+					// attempt to parse the zip
+					LOGGER.info("Attempting to parse " + DiscPackFile.getName());
+
+					// create a zip file
+					try {
+						ZipFile tempZip = new ZipFile(DiscPackFile.getAbsoluteFile());
+
+						// attempt to get the disc info
+						InputStream discInfo = tempZip.getInputStream(tempZip.getEntry("disc.json"));
+						String discInfoStr = IOUtils.toString(discInfo, StandardCharsets.UTF_8);
+						JsonObject discInfoJson = new JsonParser().parse(discInfoStr).getAsJsonObject();
+						String discId = discInfoJson.get("id").getAsString();
+
+						// create the item
+						final Item GENERATED_DISC = new GeneratedMusicDiscItem(0, SoundEvents.MUSIC_DISC_STAL, new FabricItemSettings().group(ItemGroup.MISC), 0);
+						Registry.register(Registry.ITEM, new Identifier("tsg_modulardiscs", discId), GENERATED_DISC);
+					} catch (IOException e) {
+						LOGGER.error("Couldn't open ZIP!");
+						LOGGER.error(e.toString());
+					}
+				}
+			}
 		}
 	}
 }
