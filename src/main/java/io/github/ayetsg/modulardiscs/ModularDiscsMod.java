@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonReader;
 
 import io.github.ayetsg.modulardiscs.item.GeneratedMusicDiscItem;
 
@@ -71,7 +70,7 @@ public class ModularDiscsMod implements ModInitializer {
 						String discId = discInfoJson.get("id").getAsString();
 
 						// create the item
-						final Item GENERATED_DISC = new GeneratedMusicDiscItem(discInfoJson.get("name").getAsString(), tempZip.getInputStream(tempZip.getEntry("disc.ogg")), 0, SoundEvents.MUSIC_DISC_STAL, new FabricItemSettings().group(ItemGroup.MISC), 0);
+						final Item GENERATED_DISC = new GeneratedMusicDiscItem(0, SoundEvents.MUSIC_DISC_STAL, new FabricItemSettings().group(ItemGroup.MISC), 0);
 						Registry.register(Registry.ITEM, new Identifier("tsg_modulardiscs", discId), GENERATED_DISC);
 					} catch (IOException e) {
 						LOGGER.error("Couldn't open ZIP!");
