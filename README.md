@@ -24,4 +24,4 @@
 ### You're done! You've made a disc pack that can be used with TSG's Modular Discs!
 
 # Special Thanks
-Special thanks to the [AARP](https://github.com/Devan-Kerman/ARRP) project, as this mod would not have been possible without it.
+Special thanks to the [ARPP](https://github.com/Devan-Kerman/ARRP) project, as this mod would not have been possible without it.
