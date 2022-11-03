@@ -201,7 +201,7 @@ public class ModularDiscsMod implements ModInitializer {
 			LOGGER.error(e.toString());
 		}
 
-		RESOURCE_PACK.dumpDirect(Paths.get(MinecraftDir.toString(), "DEBUG"));
+		// RESOURCE_PACK.dumpDirect(Paths.get(MinecraftDir.toString(), "DEBUG"));
 
 		RRPCallback.AFTER_VANILLA.register(a -> a.add(RESOURCE_PACK));
 	}
