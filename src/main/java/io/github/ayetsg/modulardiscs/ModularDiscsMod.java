@@ -142,6 +142,9 @@ public class ModularDiscsMod implements ModInitializer {
 						// create the item
 						final Item GENERATED_DISC = new GeneratedMusicDiscItem(0, GENERATED_SOUND_EVENT, new FabricItemSettings().group(GENERATED_DISC_GROUP).rarity(Rarity.RARE).maxCount(1), 0);
 						Registry.register(Registry.ITEM, new Identifier("tsg_modulardiscs", discId), GENERATED_DISC);
+
+						// close the temporary zip, it isnt needed anymore.
+						tempZip.close();
 					} catch (IOException e) {
 						LOGGER.error("Couldn't open ZIP!");
 						LOGGER.error(e.toString());
