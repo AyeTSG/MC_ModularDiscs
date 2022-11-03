@@ -8,12 +8,17 @@ import net.devtech.arrp.json.lang.JLang;
 import net.devtech.arrp.json.models.JModel;
 import net.devtech.arrp.json.models.JTextures;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.block.Block;
+import net.minecraft.block.Material;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
@@ -26,6 +31,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.io.IOUtils;
@@ -42,6 +50,14 @@ public class ModularDiscsMod implements ModInitializer {
 	// setup the logger
 	public static final Logger LOGGER = LoggerFactory.getLogger("tsg_modulardiscs");
 
+	// setup the internal tab render block
+	public static final Block TAB_ICON_BLOCK = new Block(FabricBlockSettings.of(Material.WOOD));
+
+	// setup the item tab
+	public static final ItemGroup GENERATED_DISC_GROUP = FabricItemGroupBuilder.build(
+		new Identifier("tsg_modulardiscs", "generated_discs"),
+		() -> new ItemStack(TAB_ICON_BLOCK));
+
 	// setup the runtime resources
 	public static final RuntimeResourcePack RESOURCE_PACK = RuntimeResourcePack.create("tsg_modulardiscs:runtime");
 	public static final JLang FINAL_LANG = new JLang();
@@ -49,6 +65,10 @@ public class ModularDiscsMod implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		// register the internal tab render block
+		Registry.register(Registry.BLOCK, new Identifier("tsg_modulardiscs", "tab_icon_block"), TAB_ICON_BLOCK);
+		Registry.register(Registry.ITEM, new Identifier("tsg_modulardiscs", "tab_icon_block"), new BlockItem(TAB_ICON_BLOCK, new FabricItemSettings()));
+
 		// get the .minecraft folder
 		Path MinecraftDir = FabricLoader.getInstance().getGameDir();
 
@@ -87,7 +107,20 @@ public class ModularDiscsMod implements ModInitializer {
 						FINAL_LANG.entry("item.tsg_modulardiscs." + discId + ".desc", discName);
 
 						// create the resources - models
-						RESOURCE_PACK.addModel(new JModel().parent("minecraft:item/generated").textures(new JTextures().layer0("minecraft:item/music_disc_stal")), new Identifier("tsg_modulardiscs", "item/" + discId));
+						ArrayList<String> fileNames = new ArrayList<>();
+						for (ZipEntry entry : Collections.list(tempZip.entries())) {
+							fileNames.add(entry.getName());
+						}
+						if (fileNames.contains("disc.png")) {
+							// add the texture
+							InputStream discTex = tempZip.getInputStream(tempZip.getEntry("disc.png"));
+
+							RESOURCE_PACK.addAsset(new Identifier("tsg_modulardiscs", "textures/" + discId + ".png"), discTex.readAllBytes());
+							RESOURCE_PACK.addModel(new JModel().parent("minecraft:item/generated").textures(new JTextures().layer0("tsg_modulardiscs:" + discId)), new Identifier("tsg_modulardiscs", "item/" + discId));
+						} else {
+							// if we don't have a disc.png, use stal's disc texture
+							RESOURCE_PACK.addModel(new JModel().parent("minecraft:item/generated").textures(new JTextures().layer0("minecraft:item/music_disc_stal")), new Identifier("tsg_modulardiscs", "item/" + discId));
+						}
 
 						// create the resources - sound
 						RESOURCE_PACK.addAsset(new Identifier("tsg_modulardiscs", "sounds/" + discId + ".ogg"), tempZip.getInputStream(tempZip.getEntry("disc.ogg")).readAllBytes());
@@ -107,8 +140,11 @@ public class ModularDiscsMod implements ModInitializer {
 						final SoundEvent GENERATED_SOUND_EVENT = new SoundEvent(GENERATED_SOUND_EVENT_ID);
 
 						// create the item
-						final Item GENERATED_DISC = new GeneratedMusicDiscItem(0, GENERATED_SOUND_EVENT, new FabricItemSettings().group(ItemGroup.MISC).rarity(Rarity.RARE).maxCount(1), 0);
+						final Item GENERATED_DISC = new GeneratedMusicDiscItem(0, GENERATED_SOUND_EVENT, new FabricItemSettings().group(GENERATED_DISC_GROUP).rarity(Rarity.RARE).maxCount(1), 0);
 						Registry.register(Registry.ITEM, new Identifier("tsg_modulardiscs", discId), GENERATED_DISC);
+
+						// close the temporary zip, it isnt needed anymore.
+						tempZip.close();
 					} catch (IOException e) {
 						LOGGER.error("Couldn't open ZIP!");
 						LOGGER.error(e.toString());
