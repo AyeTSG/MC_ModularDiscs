@@ -32,6 +32,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.io.IOUtils;
@@ -105,7 +108,20 @@ public class ModularDiscsMod implements ModInitializer {
 						FINAL_LANG.entry("item.tsg_modulardiscs." + discId + ".desc", discName);
 
 						// create the resources - models
-						RESOURCE_PACK.addModel(new JModel().parent("minecraft:item/generated").textures(new JTextures().layer0("minecraft:item/music_disc_stal")), new Identifier("tsg_modulardiscs", "item/" + discId));
+						ArrayList<String> fileNames = new ArrayList<>();
+						for (ZipEntry entry : Collections.list(tempZip.entries())) {
+							fileNames.add(entry.getName());
+						}
+						if (fileNames.contains("disc.png")) {
+							// add the texture
+							InputStream discTex = tempZip.getInputStream(tempZip.getEntry("disc.png"));
+
+							RESOURCE_PACK.addAsset(new Identifier("tsg_modulardiscs", "textures/" + discId + ".png"), discTex.readAllBytes());
+							RESOURCE_PACK.addModel(new JModel().parent("minecraft:item/generated").textures(new JTextures().layer0("tsg_modulardiscs:" + discId)), new Identifier("tsg_modulardiscs", "item/" + discId));
+						} else {
+							// if we don't have a disc.png, use stal's disc texture
+							RESOURCE_PACK.addModel(new JModel().parent("minecraft:item/generated").textures(new JTextures().layer0("minecraft:item/music_disc_stal")), new Identifier("tsg_modulardiscs", "item/" + discId));
+						}
 
 						// create the resources - sound
 						RESOURCE_PACK.addAsset(new Identifier("tsg_modulardiscs", "sounds/" + discId + ".ogg"), tempZip.getInputStream(tempZip.getEntry("disc.ogg")).readAllBytes());
