@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
   "id": "tsg_modulardiscs",
-  "version": "${version}",
+  "version": "1.0",
 
   "name": "TSG's Modular Discs",
-  "description": "This mod allows you to add music discs to /.discs/, and have them as in game records!",
+  "description": "This mod allows you to add music discs to .minecraft/discpacks/, and have them as in game records!",
   "authors": [
     "AyeTSG"
   ],
