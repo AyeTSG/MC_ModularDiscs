@@ -166,6 +166,15 @@ public class ModularDiscsMod implements ModInitializer {
 						final Identifier GENERATED_SOUND_EVENT_ID = new Identifier(MOD_ID, discId);
 						final SoundEvent GENERATED_SOUND_EVENT = new SoundEvent(GENERATED_SOUND_EVENT_ID);
 
+						// TODO!!!
+						//
+						// find the length of the ogg stream in seconds,
+						// and pass it to the generated disc. i have concerns
+						// about a potential overflow with the value being left as
+						// 0, as it'll cause the jukebox to continue to play after
+						// the song actually ends, leaving the jukebox in
+						// an indefinite "playing" state until the disc is ejected.
+
 						// create the item
 						final Item GENERATED_DISC = new GeneratedMusicDiscItem(0, GENERATED_SOUND_EVENT, new FabricItemSettings().group(GENERATED_DISC_GROUP).rarity(Rarity.RARE).maxCount(1), 0);
 						Registry.register(Registry.ITEM, new Identifier(MOD_ID, discId), GENERATED_DISC);
