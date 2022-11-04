@@ -183,7 +183,7 @@ public class ModularDiscsMod implements ModInitializer {
 						// close the temporary zip, it isnt needed anymore.
 						tempZip.close();
 					} catch (IOException e) {
-						LOGGER.error("Couldn't open ZIP!");
+						LOGGER.error("I/O Error!");
 						LOGGER.error(e.toString());
 					}
 				}
