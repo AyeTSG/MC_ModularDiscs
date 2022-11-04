@@ -19,7 +19,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
@@ -44,7 +43,6 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.mojang.datafixers.types.templates.Tag;
 
 import io.github.ayetsg.modulardiscs.item.GeneratedMusicDiscItem;
 
@@ -147,7 +145,19 @@ public class ModularDiscsMod implements ModInitializer {
 						}
 
 						// create the resources - sound
-						RESOURCE_PACK.addAsset(new Identifier(MOD_ID, "sounds/" + discId + ".ogg"), tempZip.getInputStream(tempZip.getEntry("disc.ogg")).readAllBytes());
+						InputStream oggInputStream = tempZip.getInputStream(tempZip.getEntry("disc.ogg"));
+						byte[] oggByteData = oggInputStream.readAllBytes();
+						RESOURCE_PACK.addAsset(new Identifier(MOD_ID, "sounds/" + discId + ".ogg"), oggByteData);
+						oggInputStream.close();
+
+						// TODO!!!
+						//
+						// find the length of the ogg stream in seconds,
+						// and pass it to the generated disc. i have concerns
+						// about a potential overflow with the value being left as
+						// 0, as it'll cause the jukebox to continue to play after
+						// the song actually ends, leaving the jukebox in
+						// an indefinite "playing" state until the disc is ejected.
 
 						// create the resources - sound event
 						JsonObject soundData = new JsonObject();
@@ -165,15 +175,6 @@ public class ModularDiscsMod implements ModInitializer {
 						// register the sound event with fabric
 						final Identifier GENERATED_SOUND_EVENT_ID = new Identifier(MOD_ID, discId);
 						final SoundEvent GENERATED_SOUND_EVENT = new SoundEvent(GENERATED_SOUND_EVENT_ID);
-
-						// TODO!!!
-						//
-						// find the length of the ogg stream in seconds,
-						// and pass it to the generated disc. i have concerns
-						// about a potential overflow with the value being left as
-						// 0, as it'll cause the jukebox to continue to play after
-						// the song actually ends, leaving the jukebox in
-						// an indefinite "playing" state until the disc is ejected.
 
 						// create the item
 						final Item GENERATED_DISC = new GeneratedMusicDiscItem(0, GENERATED_SOUND_EVENT, new FabricItemSettings().group(GENERATED_DISC_GROUP).rarity(Rarity.RARE).maxCount(1), 0);
